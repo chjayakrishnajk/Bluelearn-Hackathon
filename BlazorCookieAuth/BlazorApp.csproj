@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>BlazorCookieAuth</AssemblyName>
     <RootNamespace>BlazorCookieAuth</RootNamespace>
+    <UserSecretsId>7ea4e875-ff3b-4d84-8cfc-274918c31ae1</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

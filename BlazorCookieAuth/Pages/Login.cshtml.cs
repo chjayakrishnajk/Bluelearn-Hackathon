@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 
 namespace BlazorCookieAuth.Server.Pages
 {
@@ -37,7 +38,7 @@ namespace BlazorCookieAuth.Server.Pages
             {
                 var auth = new FirebaseAuthProvider(new Firebase.Auth.FirebaseConfig("AIzaSyC17liZERnPsPKzQ_2LF0G6u3KA8RTMZO8"));
                 var user = await auth.SignInWithEmailAndPasswordAsync(paramUsername, paramPassword);
-
+                Console.WriteLine(JsonConvert.SerializeObject(user));
                 if (user.User.IsEmailVerified)
                 {
                     var claims = new List<Claim>
@@ -69,8 +70,10 @@ namespace BlazorCookieAuth.Server.Pages
                     }
                 }
             }
-            catch
-            { }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             return Redirect("/logincontrol");
         }
     }

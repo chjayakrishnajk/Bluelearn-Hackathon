@@ -1,0 +1,99 @@
+﻿@using Syncfusion.Blazor.DropDowns
+@using Core
+@using Core.Issues
+@using System.Collections.ObjectModel
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Inputs
+@using Microsoft.AspNetCore.Identity
+@using Syncfusion.Blazor.RichTextEditor
+@using BlazorCookieAuth.Data
+@namespace BlazorCookieAuth.Components
+<SfDialog Width="70%" MinHeight="500px" Target="#target" style="height:320px" ShowCloseIcon="true" IsModal="true" @bind-Visible="Visibility">
+    <DialogEvents OnOpen="@beforeOpen"></DialogEvents>
+    <DialogTemplates>
+        <Content>
+            <div style="width: 100%;height:100%">
+
+                <div style="height:100%;width:700px;float:left;overflow:auto">
+                    <h2 class="miniTitles">Title :</h2>
+                    <SfTextBox @bind-Value="@ClickedIssue.Title"></SfTextBox>
+                    <h2 class="miniTitles">Description</h2>
+                    @*<SfTextBox Multiline="true" CssClass="marginbottom" @bind-Value="@ClickedIssue.Description"></SfTextBox>*@
+                    <SfRichTextEditor ShowCharCount="false" InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Description" SaveInterval="1">
+                        <RichTextEditorToolbarSettings EnableFloating="false" Items="@Tools" Type="ToolbarType.MultiRow" />
+                    </SfRichTextEditor>
+                    <h2 class="miniTitles">Level</h2>
+                    <SfDropDownList TValue="string" TItem="string" @bind-Value="@ClickedIssue.Tag" DataSource="tags" Placeholder="Select Level"></SfDropDownList>
+                    <h2 class="miniTitles">Solution</h2>
+                    <SfRichTextEditor ShowCharCount="false" InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Solution" SaveInterval="1">
+                        <RichTextEditorToolbarSettings EnableFloating="false" Items="@Tools" Type="ToolbarType.MultiRow" />
+                    </SfRichTextEditor>
+                </div>
+                <div style="margin-left:730px;">
+                    <SfCheckBox style="margin-top:15px;" Label="Solved" @bind-Checked="@ClickedIssue.Solved"></SfCheckBox>
+                </div>
+            </div>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="@ButtonText" IsPrimary="true" OnClick="@SaveIssue" />
+    </DialogButtons>
+    <DialogEvents OnOverlayModalClick="@OverlayClick"></DialogEvents>
+    <DialogAnimationSettings Effect="@DialogEffect.None"></DialogAnimationSettings>
+</SfDialog>
+@code
+{
+    public RichTextEditorImageSettings imageSettings = new RichTextEditorImageSettings();
+    [Parameter]
+    public Issue ClickedIssue { get; set; }
+    [Parameter]
+    public string ButtonText { get; set; }
+   
+    [Parameter]
+    public EventCallback<OnEditedResult> OnEdited { get; set; }
+    public List<string> tags = new List<string>() { "Beginner", "Intermediate", "Advanced" };
+    private void beforeOpen(Syncfusion.Blazor.Popups.BeforeOpenEventArgs args)
+    {
+        args.MaxHeight = null;
+    }
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+{
+    new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+    new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+    new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontName },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+    new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+    new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
+    new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
+    new ToolbarItemModel() { Command = ToolbarCommand.Image },
+    };
+    private void SaveIssue()
+    {
+        this.Visibility = false;
+        OnEdited.InvokeAsync(new OnEditedResult { Issue = ClickedIssue, UserId = ButtonText, Type = ButtonText});
+    }
+    private bool Visibility { get; set; } = false;
+    public async void OnIssueClick(Issue issue)
+    {
+        ClickedIssue = issue;
+        Visibility = true;
+    }
+    private void OverlayClick(OverlayModalClickEventArgs args)
+    {
+        this.Visibility = false;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        imageSettings.SaveFormat = SaveFormat.Base64;
+    }
+}

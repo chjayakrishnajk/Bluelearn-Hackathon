@@ -9,11 +9,13 @@
 @using Syncfusion.Blazor.Inputs
 @using Microsoft.AspNetCore.Identity
 @using Syncfusion.Blazor.RichTextEditor
+@using BlazorCookieAuth.Components
+@using BlazorCookieAuth.Data
 <SfListBox @ref="listbox1" DataSource="@Issues" TItem="Issue" AllowDragAndDrop="true" TValue="string[]">
     <ListBoxFieldSettings Text="Title"></ListBoxFieldSettings>
     <ListBoxTemplates TItem="Issue">
         <ItemTemplate>
-            <div class="d-flex" style="" @onclick="@(e => OnIssueClick(context))">
+            <div class="d-flex" style="" @onclick="@(e => OnUpdateClick(context))">
                 <div class="d-flex align-items-center flex-grow-1">
                     <div>@((context as Issue).Title)</div>
                 </div>
@@ -21,60 +23,57 @@
         </ItemTemplate>
     </ListBoxTemplates>
 </SfListBox>
-
-<SfDialog Width="70%" MinHeight="500px" Target="#target" style="height:320px" ShowCloseIcon="true" IsModal="true" @bind-Visible="Visibility">
-    <DialogEvents OnOpen="@beforeOpen"></DialogEvents>
-    <DialogTemplates>
-        <Content>
-            <div style="height:320px;width:650px">
-                <h2 class="miniTitles">Title :</h2>
-                <SfTextBox @bind-Value="@ClickedIssue.Title"></SfTextBox>
-                <h2 class="miniTitles">Description</h2>
-                @*<SfTextBox Multiline="true" CssClass="marginbottom" @bind-Value="@ClickedIssue.Description"></SfTextBox>*@
-                <SfRichTextEditor ShowCharCount="false"  InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Description" SaveInterval="1">
-                    <RichTextEditorToolbarSettings EnableFloating="false" Items="@Tools" Type="ToolbarType.Scrollable" />
-                </SfRichTextEditor>
-                <h2 class="miniTitles">Level</h2>
-                <SfDropDownList TValue="string" TItem="string" @bind-Value="@ClickedIssue.Tag" DataSource="tags" Placeholder="Select Level"></SfDropDownList>
-                <h2 class="miniTitles">Solution</h2>               
-                <SfRichTextEditor ShowCharCount="false"  InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Solution" SaveInterval="1">
-                    <RichTextEditorToolbarSettings EnableFloating="false" Items="@Tools" Type="ToolbarType.Scrollable" />
-                </SfRichTextEditor>
-                <SfCheckBox Label="Solved" @bind-Checked="@ClickedIssue.Solved"></SfCheckBox>
-                    </div>
-        </Content>
-    </DialogTemplates>
-    <DialogButtons>
-        <DialogButton Content="Save" IsPrimary="true" OnClick="@SaveIssue" />
-    </DialogButtons>
-    <DialogEvents OnOverlayModalClick="@OverlayClick"></DialogEvents>
-    <DialogAnimationSettings Effect="@DialogEffect.None"></DialogAnimationSettings>
-</SfDialog>
+<IssueEditor @ref="CreateEditor" ButtonText="Create" ClickedIssue="@ClickedIssue" OnEdited="OnEdited"></IssueEditor>
+<IssueEditor @ref="UpdateEditor" ButtonText="Update" ClickedIssue="@ClickedIssue" OnEdited="OnEdited"></IssueEditor>
+<IssueEditor @ref="DeleteEditor" ButtonText="Delete" ClickedIssue="@ClickedIssue" OnEdited="OnEdited"></IssueEditor>
 <style>
     .e-input-group, .e-input-group.e-control-wrapper {
         margin-bottom: 7px;
-    }</style>
+    }
+
+    .e-listbox-container .e-list-item.e-selected {
+        background-color: #b2b7bb;
+    }
+</style>
 @code
 {
-     private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+    IssueEditor CreateEditor;
+    IssueEditor UpdateEditor;
+    IssueEditor DeleteEditor;
+    public async void OnEdited(OnEditedResult onEdited)
     {
-        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
-        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
-        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
-        new ToolbarItemModel() { Command = ToolbarCommand.FontName },
-        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
-        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
-        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
-        new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
-        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
-        new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
-        new ToolbarItemModel() { Command = ToolbarCommand.Image },       
+        if(onEdited.Type == "Create")
+        {
+            var result = await Core.CreateIssue(onEdited.Issue, Email);
+        }
+        else if(onEdited.Type == "Update")
+        {
+            var result = await Core.UpdateIssue(Email, onEdited.Issue);
+        }
+        else if(onEdited.Type == "Delete")
+        {
+            var result = await Core.DeleteIssue(Email, onEdited.Issue.Id);
+        }
+    }
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+{
+    new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+    new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+    new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontName },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+    new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+    new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
+    new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
+    new ToolbarItemModel() { Command = ToolbarCommand.Image },
     };
     public RichTextEditorImageSettings imageSettings = new RichTextEditorImageSettings();
     private SfTextBox titleTextBox;
@@ -85,10 +84,11 @@
         args.MaxHeight = null;
     }
     public Issue ClickedIssue = new Issue();
-    public async void OnIssueClick(Issue issue)
+    public async void OnUpdateClick(Issue issue)
     {
         ClickedIssue = issue;
-        Visibility = true;
+        StateHasChanged();
+        UpdateEditor.OnIssueClick(issue);
     }
     private bool Visibility { get; set; } = false;
     private void SaveIssue()
@@ -106,6 +106,7 @@
     {
         this.Issues.Remove(listData);
     }
+    public string Email { get; set; }
     protected override async Task OnInitializedAsync()
     {
         await Core.Initiliaze();
@@ -113,6 +114,7 @@
         var user = authState.User;
         if (user.Claims.Count() > 0)
         {
+            Email = user.Claims.Where(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").FirstOrDefault().Value;
             Issues = new ObservableCollection<Issue>(await Core.GetIssues(user.Claims.Where(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").FirstOrDefault().Value));
         }
         imageSettings.SaveFormat = SaveFormat.Base64;

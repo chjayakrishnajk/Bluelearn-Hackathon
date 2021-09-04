@@ -19,7 +19,7 @@ namespace ConsoleApp
                 LastUpdated = DateTime.UtcNow.ToString("dd-MM-yyyy HH:mm:ss"),
                 Tag = "Beginner",
                 Solution = "Format the Code with ctrl + F and ctrl + d then you can easily find the missing bracket",
-                Status = "Solved!"
+                Solved = true
             };
             await Issue.Initiliaze();
             var result = await Issue.GetIssues("chjayakrishnajk@gmail.com");

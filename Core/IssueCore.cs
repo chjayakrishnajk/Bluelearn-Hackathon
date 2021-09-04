@@ -43,12 +43,12 @@ namespace Core
             }
             return issues;
         }
-        public async Task<WriteResult> UpdateIssue(string userId , string docId , Issue issue)
+        public async Task<WriteResult> UpdateIssue(string userId , Issue issue)
         {
             var data = issue.GetType()
      .GetProperties(BindingFlags.Instance | BindingFlags.Public)
           .ToDictionary(prop => prop.Name, prop => (object)prop.GetValue(issue, null));
-            return(await database.Collection("users").Document(userId).Collection("Issues").Document(docId).UpdateAsync(data));
+            return(await database.Collection("users").Document(userId).Collection("Issues").Document(issue.Id).UpdateAsync(data));
         }
         public async Task<Google.Cloud.Firestore.WriteResult> DeleteIssue(string userId, string docId)
         {
