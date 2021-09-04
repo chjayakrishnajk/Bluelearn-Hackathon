@@ -16,12 +16,12 @@ namespace Core.Issues
         [FirestoreProperty]
         public string Description { get; set; }
         [FirestoreProperty]
-        public string Tag { get; set; }
-        [FirestoreProperty]
-        public List<string> Keywords { get; set; }
+        public string Tag { get; set; }   
         [FirestoreProperty]
         public string Solution { get; set; }
         [FirestoreProperty]
-        public List<string> Base64Images { get; set; }
+        public bool Solved { get; set; }
+        [FirestoreProperty]
+        public string Id { get; set; }
     }
 }

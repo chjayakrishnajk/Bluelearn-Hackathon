@@ -1,0 +1,20 @@
+﻿@inherits LayoutComponentBase
+<div class="main">
+    <AuthorizeView>
+        <Authorized>
+            <b>Hello, @context.User.Identity.Name!</b>
+            <a class="ml-md-auto btn btn-primary"
+               href="/logout?returnUrl=/"
+               target="_top">Logout</a>
+        </Authorized>
+        <NotAuthorized>
+            <div class="top-row px-4">
+                <a href="/signup">Registor</a>
+                <a href="/logincontrol">Login</a>               
+            </div>            
+        </NotAuthorized>
+    </AuthorizeView>
+    <div class="content px-4">
+        @Body
+    </div>
+</div>

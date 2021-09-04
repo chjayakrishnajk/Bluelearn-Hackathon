@@ -1,4 +1,5 @@
 ﻿using Core.Issues;
+using Firebase.Auth;
 using Google.Cloud.Firestore;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,10 @@ namespace Core
           .ToDictionary(prop => prop.Name, prop => (object)prop.GetValue(issue, null));
             return(await col.AddAsync(data));
         }
+        public async Task Signin()
+        {
+            var authProvider = new FirebaseAuthProvider(new FirebaseConfig("AIzaSyC17liZERnPsPKzQ_2LF0G6u3KA8RTMZO8"));
+        }
         public async Task<List<Issue>> GetIssues(string userId)
         {
             var docRef = database.Collection("users").Document(userId).Collection("Issues");
@@ -33,9 +38,10 @@ namespace Core
             foreach (var item in snap.Documents)
             {
                 var issueItem = item.ConvertTo<Issue>();
+                issueItem.Id = item.Id;
                 issues.Add(issueItem);
             }
-            return null;
+            return issues;
         }
         public async Task<WriteResult> UpdateIssue(string userId , string docId , Issue issue)
         {

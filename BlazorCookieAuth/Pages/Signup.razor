@@ -1,0 +1,20 @@
+﻿@using Firebase.Auth;
+@page "/signup"
+<h3>Signup</h3>
+<label>Email:</label>
+<input @bind-value="email" type="text" /><br><br>
+<label>Password:</label>
+<input @bind-value="password" type="password"/><br><br>
+<label>Display Name:</label>
+<input @bind-value="displayName" type="text"/><br><br>
+<button class="ml-md-auto btn btn-primary" @onclick="Registor">Registor</button>
+@code {
+    public string email { get; set; }
+    public string password { get; set; }
+    public string displayName { get; set; }
+    public async Task Registor()
+    {
+        var auth = new FirebaseAuthProvider(new Firebase.Auth.FirebaseConfig("AIzaSyC17liZERnPsPKzQ_2LF0G6u3KA8RTMZO8"));
+        var result = await auth.CreateUserWithEmailAndPasswordAsync(email, password, displayName, true);
+    }
+}

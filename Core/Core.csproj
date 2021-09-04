@@ -15,7 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FirebaseAdmin" Version="2.2.0" />
+    <PackageReference Include="FirebaseAuthentication.net" Version="3.7.2" />
     <PackageReference Include="Google.Cloud.Firestore" Version="2.4.0" />
+    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="19.2.0.59" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,125 @@
+﻿@page "/"
+@using Syncfusion.Blazor.DropDowns
+@using Core
+@using Core.Issues
+@using System.Collections.ObjectModel
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Inputs
+@using Microsoft.AspNetCore.Identity
+@using Syncfusion.Blazor.RichTextEditor
+<SfListBox @ref="listbox1" DataSource="@Issues" TItem="Issue" AllowDragAndDrop="true" TValue="string[]">
+    <ListBoxFieldSettings Text="Title"></ListBoxFieldSettings>
+    <ListBoxTemplates TItem="Issue">
+        <ItemTemplate>
+            <div class="d-flex" style="" @onclick="@(e => OnIssueClick(context))">
+                <div class="d-flex align-items-center flex-grow-1">
+                    <div>@((context as Issue).Title)</div>
+                </div>
+            </div>
+        </ItemTemplate>
+    </ListBoxTemplates>
+</SfListBox>
+
+<SfDialog Width="70%" MinHeight="500px" Target="#target" style="height:320px" ShowCloseIcon="true" IsModal="true" @bind-Visible="Visibility">
+    <DialogEvents OnOpen="@beforeOpen"></DialogEvents>
+    <DialogTemplates>
+        <Content>
+            <div style="height:320px;width:650px">
+                <h2 class="miniTitles">Title :</h2>
+                <SfTextBox @bind-Value="@ClickedIssue.Title"></SfTextBox>
+                <h2 class="miniTitles">Description</h2>
+                @*<SfTextBox Multiline="true" CssClass="marginbottom" @bind-Value="@ClickedIssue.Description"></SfTextBox>*@
+                <SfRichTextEditor ShowCharCount="false"  InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Description" SaveInterval="1">
+                    <RichTextEditorToolbarSettings EnableFloating="false" Items="@Tools" Type="ToolbarType.Scrollable" />
+                </SfRichTextEditor>
+                <h2 class="miniTitles">Level</h2>
+                <SfDropDownList TValue="string" TItem="string" @bind-Value="@ClickedIssue.Tag" DataSource="tags" Placeholder="Select Level"></SfDropDownList>
+                <h2 class="miniTitles">Solution</h2>               
+                <SfRichTextEditor ShowCharCount="false"  InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Solution" SaveInterval="1">
+                    <RichTextEditorToolbarSettings EnableFloating="false" Items="@Tools" Type="ToolbarType.Scrollable" />
+                </SfRichTextEditor>
+                <SfCheckBox Label="Solved" @bind-Checked="@ClickedIssue.Solved"></SfCheckBox>
+                    </div>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="Save" IsPrimary="true" OnClick="@SaveIssue" />
+    </DialogButtons>
+    <DialogEvents OnOverlayModalClick="@OverlayClick"></DialogEvents>
+    <DialogAnimationSettings Effect="@DialogEffect.None"></DialogAnimationSettings>
+</SfDialog>
+<style>
+    .e-input-group, .e-input-group.e-control-wrapper {
+        margin-bottom: 7px;
+    }</style>
+@code
+{
+     private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+    {
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontName },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
+        new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateLink },
+        new ToolbarItemModel() { Command = ToolbarCommand.Image },       
+    };
+    public RichTextEditorImageSettings imageSettings = new RichTextEditorImageSettings();
+    private SfTextBox titleTextBox;
+    public List<string> tags = new List<string>() { "Beginner", "Intermediate", "Advanced" };
+    private ResizeDirection[] dialogResizeDirections { get; set; } = new ResizeDirection[] { ResizeDirection.All };
+    private void beforeOpen(Syncfusion.Blazor.Popups.BeforeOpenEventArgs args)
+    {
+        args.MaxHeight = null;
+    }
+    public Issue ClickedIssue = new Issue();
+    public async void OnIssueClick(Issue issue)
+    {
+        ClickedIssue = issue;
+        Visibility = true;
+    }
+    private bool Visibility { get; set; } = false;
+    private void SaveIssue()
+    {
+        this.Visibility = false;
+    }
+    private void OverlayClick(OverlayModalClickEventArgs args)
+    {
+        this.Visibility = false;
+    }
+    SfListBox<string[], Issue> listbox1;
+    public ObservableCollection<Issue> Issues = new ObservableCollection<Issue>();
+    public IssueCore Core = new IssueCore();
+    public void RemoveItem(Issue listData)
+    {
+        this.Issues.Remove(listData);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await Core.Initiliaze();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Claims.Count() > 0)
+        {
+            Issues = new ObservableCollection<Issue>(await Core.GetIssues(user.Claims.Where(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").FirstOrDefault().Value));
+        }
+        imageSettings.SaveFormat = SaveFormat.Base64;
+    }
+    public class VehicleData
+    {
+        public string Text { get; set; }
+        public string Id { get; set; }
+    }
+}
