@@ -8,10 +8,10 @@ __Getting tired of organizing__
 
 __Hard to find solutions or may be problem with right peers ?__
 
+__Problem with Maths and need help with Community.__
+
 __Here is our business idea__
 
-
-__Problem with Maths and need help with Community.__
 ## So we tried to made a App where you can
 - __Note down Issues__
 - __Revise through all Issues__
