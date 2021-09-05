@@ -1,8 +1,10 @@
 # Team 7
 ## Note / Issues Taker App
-__Are you tried of remembering all things you learnt 🤔 ?
-You are learning in a very fast way and problem with revising things at exam ?
-Problem with Maths and need help with Community.__
+__Are you tried of remembering all things you learnt 🤔 ?__
+
+__You are learning in a very fast way and problem with revising things at exam ?__
+
+__Problem with Maths and need help with Community.__
 ## So we tried to made a App where you can
 - __Note down Issues__
 - __Revise through all Issues__
