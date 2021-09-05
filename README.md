@@ -17,8 +17,8 @@ __Here is our business idea__
 - __Revise through all Issues__
 - __Share Issues with all other students__
 - __Get solutions directly from internet__
-- __Compete with each other_
-- __Share your progress_
+- __Compete with each other__
+- __Share your progress__
 - __Make organizing more fun with ui__
 
 ## Technologies used
