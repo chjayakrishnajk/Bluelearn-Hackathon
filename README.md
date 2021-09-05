@@ -22,7 +22,9 @@ dotnet restore
 dotnet run
 ```
 [Result after running the commands](https://drive.google.com/file/d/1E4LAnGbww9CoE9_jb33-qcMVg8kVRC2o/view?usp=sharing)
+
 [Hosted Website](http://learningthings.org/)
+
 __Note : There is problem with hosting related to files. So you can check the video and screenshots below__
 [Video and Images Google Drive](https://drive.google.com/drive/folders/17jNDkFjPMuiFWp-UspEiabMOG-uR2sx2?usp=sharing)
 
