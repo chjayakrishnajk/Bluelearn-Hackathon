@@ -4,6 +4,13 @@ __Are you tried of remembering all things you learnt 🤔 ?__
 
 __You are learning in a very fast way and problem with revising things at exam ?__
 
+__Getting tired of organizing__
+
+__Hard to find solutions or may be problem with right peers ?__
+
+__Here is our business idea__
+
+
 __Problem with Maths and need help with Community.__
 ## So we tried to made a App where you can
 - __Note down Issues__
