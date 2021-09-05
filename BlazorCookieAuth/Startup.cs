@@ -43,6 +43,7 @@ namespace BlazorCookieAuth
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            services.AddServerSideBlazor().AddCircuitOptions(option => { option.DetailedErrors = true; });
             services.AddAuthentication(
                 CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie();

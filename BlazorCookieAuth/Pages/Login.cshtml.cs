@@ -43,8 +43,9 @@ namespace BlazorCookieAuth.Server.Pages
                 {
                     var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, paramUsername),
+                new Claim(ClaimTypes.Email, paramUsername),
                 new Claim(ClaimTypes.Role, "Administrator"),
+                new Claim(ClaimTypes.Name , user.User.DisplayName)
             };
 
                     var claimsIdentity = new ClaimsIdentity(
@@ -62,7 +63,7 @@ namespace BlazorCookieAuth.Server.Pages
                         CookieAuthenticationDefaults.AuthenticationScheme,
                         new ClaimsPrincipal(claimsIdentity),
                         authProperties);
-                        return Redirect("/");
+                        return Redirect("/dashboard");
                     }
                     catch (Exception ex)
                     {

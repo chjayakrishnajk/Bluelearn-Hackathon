@@ -1,0 +1,419 @@
+﻿@page "/dashboard"
+@using System.Collections.Generic
+@using System.Linq;
+@using Syncfusion.Blazor.DropDowns
+@using Core
+@using Core.Issues
+@using System.Collections.ObjectModel
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Inputs
+@using Microsoft.AspNetCore.Identity
+@using Syncfusion.Blazor.RichTextEditor
+@using BlazorCookieAuth.Components
+@using BlazorCookieAuth.Data
+<SfTextBox @ref="search" Input="OnInput" Placeholder="Search" Created="@onCreateUpload">
+</SfTextBox>
+<a class="btn-normal"
+   style="float:left; color: #ffffff;margin-top:10px;"
+   href="javascript:void(0);"
+   @onclick="OnCreateClick"
+   target="_top">Create Issue</a>
+<div class="">
+    <div class="">
+        <div class="card-hover-shadow-2x mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i class="fa fa-tasks"></i>&nbsp;Issues</div>
+            </div>
+            <div class="">
+                <perfect-scrollbar class="ps-show-limits">
+                    <div style="position: static;" class="ps ps--active-y">
+                        <div class="ps-content">
+                            <ul class=" list-group list-group-flush">
+                                @foreach (var issue in Issues)
+                                {
+                                    <li class="list-group-item">
+                                        @if (!issue.Solved)
+                                        {
+                                            @if (issue.Status == "High")
+                                            {
+                                                <div class="todo-indicator bg-danger"></div>
+                                            }
+                                            else if (issue.Status == "Intermediate")
+                                            {
+                                                <div class="todo-indicator bg-warning"></div>
+                                            }
+                                            else if (issue.Status == "Low")
+                                            {
+                                                <div class="todo-indicator bg-info"></div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="todo-indicator bg-success"></div>
+                                        }
+                                        <div class="widget-content p-0">
+                                            <div class="widget-content-wrapper">
+                                                <div>
+                                                    <div class="widget-content-left mr-2">
+                                                        <div class="custom-checkbox custom-control"><input class="custom-control-input" id="exampleCustomCheckbox10" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox10">&nbsp;</label></div>
+                                                    </div>
+                                                    <div class="widget-content-left flex2">
+                                                        <div class="widget-heading">@issue.Title</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="widget-content-right"><button class="border-0 btn-transition btn btn-outline-success" @onclick="@(e => OnUpdateClick(issue))"><i class="fa fa-edit"></i></button> <button class="border-0 btn-transition btn btn-outline-danger" @onclick="(e=> RemoveItem(issue))"> <i class="fa fa-trash"></i> </button> </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </perfect-scrollbar>
+            </div>
+        </div>
+    </div>
+</div>
+<IssueEditor @ref="CreateEditor" ButtonText="Create" ClickedIssue="@ClickedIssue" OnEdited="OnEdited"></IssueEditor>
+<IssueEditor @ref="UpdateEditor" ButtonText="Update" ClickedIssue="@ClickedIssue" OnEdited="OnEdited"></IssueEditor>
+<IssueEditor @ref="DeleteEditor" ButtonText="Delete" ClickedIssue="@ClickedIssue" OnEdited="OnEdited"></IssueEditor>
+<style>
+    .e-input-group, .e-input-group.e-control-wrapper {
+        margin-bottom: 7px;
+    }
+
+
+    .e-search:before {
+        content: '\e769';
+        font-family: "e-icons";
+    }
+
+    .e-search {
+        width: auto;
+    }
+
+    .e-listbox-container .e-list-item.e-selected {
+        background-color: #b2b7bb;
+    }
+
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: 0.88rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        text-align: left;
+    }
+
+    i {
+        font-style: italic
+    }
+
+    .container {
+        margin-top: 100px
+    }
+
+    .card {
+        border-width: 0;
+        transition: all .2s
+    }
+
+    .card-header:first-child {
+        border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        border-bottom-width: 1px;
+        padding-top: 0;
+        padding-bottom: 0;
+        padding-right: 0.625rem;
+        height: 3.5rem;
+        background-color: #fff
+    }
+
+    .widget-subheading {
+        color: #858a8e;
+        font-size: 10px
+    }
+
+    .card-header.card-header-tab .card-header-title {
+        display: flex;
+        align-items: center;
+        white-space: nowrap
+    }
+
+    .card-header .header-icon {
+        font-size: 1.65rem;
+        margin-right: 0.625rem
+    }
+
+    .card-header.card-header-tab .card-header-title {
+        display: flex;
+        align-items: center;
+        white-space: nowrap
+    }
+
+    .btn-actions-pane-right {
+        margin-left: auto;
+        white-space: nowrap
+    }
+
+    .text-capitalize {
+        text-transform: capitalize !important
+    }
+
+    .scroll-area-sm {
+        height: 288px;
+        overflow-x: hidden
+    }
+
+    .list-group-item {
+        position: relative;
+        display: block;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: -1px;
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.125)
+    }
+
+    .list-group {
+        display: flex;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0
+    }
+
+    .todo-indicator {
+        position: absolute;
+        width: 4px;
+        height: 60%;
+        border-radius: 0.3rem;
+        left: 0.625rem;
+        top: 20%;
+        opacity: .6;
+        transition: opacity .2s
+    }
+
+    .bg-warning {
+        background-color: #f7b924 !important
+    }
+
+    .widget-content {
+        padding: 1rem;
+        flex-direction: row;
+        align-items: center
+    }
+
+        .widget-content .widget-content-wrapper {
+            display: flex;
+            flex: 1;
+            position: relative;
+            align-items: center
+        }
+
+        .widget-content .widget-content-right.widget-content-actions {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity .2s
+        }
+
+        .widget-content .widget-content-right {
+            margin-left: auto
+        }
+
+    .btn:not(:disabled):not(.disabled) {
+        cursor: pointer
+    }
+
+    .btn {
+        position: relative;
+        transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s
+    }
+
+    .btn-outline-success {
+        color: #3ac47d;
+        border-color: #3ac47d
+    }
+
+        .btn-outline-success:hover {
+            color: #fff;
+            background-color: #3ac47d;
+            border-color: #3ac47d
+        }
+
+        .btn-outline-success:hover {
+            color: #fff;
+            background-color: #3ac47d;
+            border-color: #3ac47d
+        }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #3f6ad8;
+        border-color: #3f6ad8
+    }
+
+    .btn {
+        position: relative;
+        transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+        outline: none !important
+    }
+
+    .card-footer {
+        background-color: #fff
+    }
+</style>
+@code
+{
+    SfTextBox search;
+    public void onCreateUpload()
+    {
+        search.AddIcon("prepend", "fa fa-search");
+    }
+    public ObservableCollection<Issue> Backup { get; set; } = new ObservableCollection<Issue>();
+    public async Task OnInput(InputEventArgs args)
+    {
+        if (args.Value.Length == 1 && Backup.Count == 0)
+        {
+            Backup = Issues;
+        }
+        if (args.Value.Length == 0)
+        {
+            Issues = Backup;
+            Backup = new ObservableCollection<Issue>();
+        }
+        var searchResult = (await TFIDF.Group(args.Value, Issues.ToList())).ToList();
+        searchResult.Sort(
+               delegate (KeyValuePair<Issue, float> pair1,
+               KeyValuePair<Issue, float> pair2)
+               {
+                   return pair2.Value.CompareTo(pair1.Value);
+               });
+        Issues = new ObservableCollection<Issue>(searchResult.Select(x => x.Key));
+        StateHasChanged();
+    }
+    public TFIDF TFIDF { get; set; } = new TFIDF();
+    IssueEditor CreateEditor;
+    IssueEditor UpdateEditor;
+    IssueEditor DeleteEditor;
+    public async void OnEdited(OnEditedResult onEdited)
+    {
+        onEdited.Issue.Email = new string(Email.ToArray());
+        onEdited.Issue.Created = DateTime.UtcNow.ToString("dd-MM-yyyy HH-mm-ss");
+        if (onEdited.Type == "Create")
+        {
+            var result = await Core.CreateIssue(onEdited.Issue, Email);
+            Issues.Add(onEdited.Issue);
+            StateHasChanged();
+        }
+        else if (onEdited.Type == "Update")
+        {
+            var result = await Core.UpdateIssue(Email, onEdited.Issue);
+            for (int i = 0; i < Issues.Count; ++i)
+            {
+                if (Issues[i].Id == onEdited.Issue.Id)
+                {
+                    Issues[i] = onEdited.Issue;
+                }
+            }
+            StateHasChanged();
+        }
+    }
+
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+{
+    new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+    new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+    new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontName },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+    new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+    new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
+    new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
+    new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+    new ToolbarItemModel() { Command  = ToolbarCommand.CreateLink },
+    new ToolbarItemModel() { Command = ToolbarCommand.Image },
+    };
+    public RichTextEditorImageSettings imageSettings = new RichTextEditorImageSettings();
+    private SfTextBox titleTextBox;
+    public List<string> tags = new List<string>() { "Beginner", "Intermediate", "Advanced" };
+    private ResizeDirection[] dialogResizeDirections { get; set; } = new ResizeDirection[] { ResizeDirection.All };
+    private void beforeOpen(Syncfusion.Blazor.Popups.BeforeOpenEventArgs args)
+    {
+        args.MaxHeight = null;
+    }
+    public Issue ClickedIssue = new Issue();
+    public async void OnUpdateClick(Issue issue)
+    {
+        ClickedIssue = new Issue()
+        {
+            Description = issue.Description,
+            Id = issue.Id,
+            LastUpdated = issue.LastUpdated,
+            Solution = issue.Solution,
+            Solved = issue.Solved,
+            Tag = issue.Tag,
+            Title = issue.Title,
+            Status = issue.Status,
+            Email = issue.Email , 
+            Comments = issue.Comments,
+            Created = DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss")
+        };
+        StateHasChanged();
+        UpdateEditor.OnIssueClick(ClickedIssue);
+    }
+    public async void OnCreateClick()
+    {
+        var issue = new Issue();
+        StateHasChanged();
+        CreateEditor.OnIssueClick(issue);
+    }
+    private bool Visibility { get; set; } = false;
+    private void SaveIssue()
+    {
+        this.Visibility = false;
+    }
+    private void OverlayClick(OverlayModalClickEventArgs args)
+    {
+        this.Visibility = false;
+    }
+    SfListBox<string[], Issue> listbox1;
+    public ObservableCollection<Issue> Issues = new ObservableCollection<Issue>();
+    public IssueCore Core = new IssueCore();
+    public async Task RemoveItem(Issue issue)
+    {
+        Issues.Remove(issue);
+        StateHasChanged();
+        var result = await Core.DeleteIssue(Email, issue.Id);
+    }
+    public string Email { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await Core.Initiliaze();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Claims.Count() > 0)
+        {
+            Email = user.Claims.Where(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").FirstOrDefault().Value;
+            Issues = new ObservableCollection<Issue>(await Core.GetIssues(user.Claims.Where(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").FirstOrDefault().Value));
+        }
+        imageSettings.SaveFormat = SaveFormat.Base64;
+    }
+    public class VehicleData
+    {
+        public string Text { get; set; }
+        public string Id { get; set; }
+    }
+}

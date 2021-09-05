@@ -1,20 +1,25 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navigation
 <div class="main">
-    <AuthorizeView>
-        <Authorized>
-            <b>Hello, @context.User.Identity.Name!</b>
-            <a class="ml-md-auto btn btn-primary"
-               href="/logout?returnUrl=/"
-               target="_top">Logout</a>
-        </Authorized>
-        <NotAuthorized>
-            <div class="top-row px-4">
-                <a href="/signup">Registor</a>
-                <a href="/logincontrol">Login</a>               
-            </div>            
-        </NotAuthorized>
-    </AuthorizeView>
-    <div class="content px-4">
+    <div class="topbar">
+        <AuthorizeView>
+
+            <Authorized>
+                @if (navigation.Uri == navigation.BaseUri + "dashboard")
+                {
+                    <h3 style="color:#8298ae; margin-top:5px"> Hello, @context.User.Identity.Name</h3>
+                    <a class="btn-normal"
+                       style="float:right; color: #ffffff;margin-top:10px;"
+                       href="/logout?returnUrl=/"
+                       target="_top">Logout</a>
+                }
+            </Authorized>
+            <NotAuthorized>
+                
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+    <div class="content px-4" style=" padding-top: 60px; ">
         @Body
     </div>
 </div>

@@ -1,24 +1,57 @@
 ﻿@page "/loginControl"
 @using System.Web;
 
-<AuthorizeView>
-    <Authorized>
-        <b>Hello, @context.User.Identity.Name!</b>
-        <a class="ml-md-auto btn btn-primary"
-           href="/logout?returnUrl=/"
-           target="_top">Logout</a>
-    </Authorized>
-    <NotAuthorized>
-        <h2>Login</h2>
-        <label>Email:</label>
-<input @bind-value="Email" placeholder="Email" type="text" /><br><br>
-<label>Password:</label>
-<input @bind-value="Password" placeholder="password" type="password"/><br><br>
-        <a class="ml-md-auto btn btn-primary"
-           href="/login?paramUsername=@encode(@Email)&paramPassword=@encode(@Password)"
-           target="_top">Login</a>
-    </NotAuthorized>
-</AuthorizeView>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>Login</title>
+</head>
+<body>
+
+    <div class="main-wrapper login-body">
+        <div class="login-wrapper">
+            <div class="container">
+                <div class="loginbox">
+                    <div class="login-left">
+                        <img class="img-fluid" src="/logo.png" alt="Logo">
+                    </div>
+                    <div class="login-right">
+                        <div class="login-right-wrap">
+                            <h1>Login</h1>
+                            <p class="account-subtitle">Access to our dashboard</p>
+
+                            <div>
+                                <div class="form-group">
+                                    <input class="form-control" type="text" @bind-value="Email" placeholder="Email">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" type="password" @bind-value="@Password" placeholder="Password">
+                                </div>
+                                <a class="btn btn-primary btn-block"
+                                   href="/login?paramUsername=@encode(@Email)&paramPassword=@encode(@Password)"
+                                   target="_top">Login</a>
+                            </div>
+
+                            <div class="text-center forgotpass"><a href="/forgotpassword">Forgot Password?</a></div>
+                            <div class="login-or">
+                                <span class="or-line"></span>
+                            </div>
+
+                            <div class="social-login">
+
+                                <div class="text-center dont-have">Don’t have an account? <a href="/signup">Register</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
 
 @code {
     string Email = "";

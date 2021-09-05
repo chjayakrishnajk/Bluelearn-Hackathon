@@ -1,6 +1,8 @@
-﻿@using Syncfusion.Blazor.DropDowns
+﻿@using System;
+@using Syncfusion.Blazor.DropDowns
 @using Core
 @using Core.Issues
+@using System.Web;
 @using System.Collections.ObjectModel
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.Buttons
@@ -10,52 +12,112 @@
 @using BlazorCookieAuth.Data
 @namespace BlazorCookieAuth.Components
 <SfDialog Width="70%" MinHeight="500px" Target="#target" style="height:320px" ShowCloseIcon="true" IsModal="true" @bind-Visible="Visibility">
-    <DialogEvents OnOpen="@beforeOpen"></DialogEvents>
+    <DialogEvents OnClose="@beforeClose" OnOpen="@beforeOpen"></DialogEvents>
+    <DialogAnimationSettings Effect="@AnimationEffect" Duration=500 />
     <DialogTemplates>
         <Content>
             <div style="width: 100%;height:100%">
 
                 <div style="height:100%;width:700px;float:left;overflow:auto">
                     <h2 class="miniTitles">Title :</h2>
-                    <SfTextBox @bind-Value="@ClickedIssue.Title"></SfTextBox>
+                    <SfTextBox Readonly="IsReadOnly" @bind-Value="@ClickedIssue.Title"></SfTextBox>
                     <h2 class="miniTitles">Description</h2>
                     @*<SfTextBox Multiline="true" CssClass="marginbottom" @bind-Value="@ClickedIssue.Description"></SfTextBox>*@
-                    <SfRichTextEditor ShowCharCount="false" InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Description" SaveInterval="1">
+                    <SfRichTextEditor Readonly="IsReadOnly" ShowCharCount="false" InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Description" SaveInterval="1">
                         <RichTextEditorToolbarSettings EnableFloating="false" Items="@Tools" Type="ToolbarType.MultiRow" />
                     </SfRichTextEditor>
                     <h2 class="miniTitles">Level</h2>
-                    <SfDropDownList TValue="string" TItem="string" @bind-Value="@ClickedIssue.Tag" DataSource="tags" Placeholder="Select Level"></SfDropDownList>
+                    <SfDropDownList Readonly="IsReadOnly" TValue="string" TItem="string" @bind-Value="@ClickedIssue.Tag" DataSource="tags" Placeholder="Select Level"></SfDropDownList>
                     <h2 class="miniTitles">Solution</h2>
-                    <SfRichTextEditor ShowCharCount="false" InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Solution" SaveInterval="1">
+                    <SfRichTextEditor Readonly="IsReadOnly" ShowCharCount="false" InsertImageSettings="imageSettings" @bind-Value="@ClickedIssue.Solution" SaveInterval="1">
                         <RichTextEditorToolbarSettings EnableFloating="false" Items="@Tools" Type="ToolbarType.MultiRow" />
                     </SfRichTextEditor>
                 </div>
                 <div style="margin-left:730px;">
-                    <SfCheckBox style="margin-top:15px;" Label="Solved" @bind-Checked="@ClickedIssue.Solved"></SfCheckBox>
+                    <SfCheckBox Disabled="IsReadOnly" style="margin-top:15px;" Label="Solved" @bind-Checked="@ClickedIssue.Solved"></SfCheckBox>
+                    <h2 style="margin-top:10px" class="miniTitles">Priority :</h2>
+                    <SfDropDownList Readonly="IsReadOnly" TValue="string" TItem="string" @bind-Value="@ClickedIssue.Status" DataSource="Priority" Placeholder="Select Priority"></SfDropDownList>
+                    <a class="btn-normal" style="color: #ffffff;margin-top:3px;margin-bottom:3px;font-size: 12px;" href="https://www.google.com/search?btnI=@HttpUtility.UrlEncode(ClickedIssue.Title)&q=%7B%7D&sourceid=navclient" target="_blank">Search in Google</a>
+                    <br />
+                    @if (!IsReadOnly)
+                    {
+                        @if (!ClickedIssue.IsPublic)
+                        {
+                            <a class="btn-normal" style="color: #ffffff;margin-top:3px;font-size: 12px;" @onclick="(e => AskEveryone())" href="javascript:void(0);">Ask Everyone</a>
+                        }
+                        else
+                        {
+                            <a class="btn-normal" style="color: #ffffff;margin-top:3px;font-size: 12px;" href="/community/@ClickedIssue.Id" target="_blank">Go to Community</a>
+                        }
+                    }
+                    <h2 style="margin-top:10px" class="miniTitles">Comments :</h2>
+                    <SfTextBox Placeholder="Type your Comment" @bind-Value="Comment"></SfTextBox>
+                    <a class="btn-normal" @onclick="AddComment" style="color: #ffffff;margin-top:3px;margin-bottom:10px;font-size: 12px;" href="javascript:void(0);">Add Comment</a>
+                    @foreach (var cmnt in ClickedIssue.Comments)
+                    {
+                        <SfTextBox Readonly="true" Value="@cmnt"></SfTextBox>
+                    }
                 </div>
             </div>
         </Content>
     </DialogTemplates>
     <DialogButtons>
-        <DialogButton Content="@ButtonText" IsPrimary="true" OnClick="@SaveIssue" />
+        <DialogButton Content="@ButtonText" CssClass="e-primary e-flat e-btn" IsPrimary="true" OnClick="@SaveIssue" />
     </DialogButtons>
     <DialogEvents OnOverlayModalClick="@OverlayClick"></DialogEvents>
     <DialogAnimationSettings Effect="@DialogEffect.None"></DialogAnimationSettings>
 </SfDialog>
+<style>
+    .e-btn.e-flat.e-primary, .e-css.e-btn.e-flat.e-primary {
+        background-color: #2487ce;
+        border-color: #2487ce;
+        color: #fff;
+    }
+</style>
 @code
 {
+    [Parameter]
+    public bool IsReadOnly { get; set; } = false;
+    public async Task AddComment()
+    {
+        if (!string.IsNullOrEmpty(Comment))
+        {
+            ClickedIssue.Comments.Add(new string(Comment.ToCharArray()));
+            Comment = null;
+            StateHasChanged();
+        }
+    }
+    public string Comment { get; set; }
+    private DialogEffect AnimationEffect = DialogEffect.FlipLeftUp;
     public RichTextEditorImageSettings imageSettings = new RichTextEditorImageSettings();
     [Parameter]
-    public Issue ClickedIssue { get; set; }
+    public Issue ClickedIssue { get; set; } = new Issue();
     [Parameter]
     public string ButtonText { get; set; }
-   
     [Parameter]
     public EventCallback<OnEditedResult> OnEdited { get; set; }
+    public List<string> Priority = new List<string>() { "Low", "Intermediate", "High" };
     public List<string> tags = new List<string>() { "Beginner", "Intermediate", "Advanced" };
     private void beforeOpen(Syncfusion.Blazor.Popups.BeforeOpenEventArgs args)
     {
         args.MaxHeight = null;
+    }
+    public IssueCore Core = new IssueCore();
+    public async Task AskEveryone()
+    {
+        try
+        {
+            await Core.AskEveryone(ClickedIssue);
+            ClickedIssue.IsPublic = true;
+            StateHasChanged();
+        }
+        catch( Exception ex)
+        {
+        }
+    }
+    public async Task beforeClose(Syncfusion.Blazor.Popups.BeforeCloseEventArgs args)
+    {
+        ClickedIssue = new Issue();
     }
     private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
 {
@@ -80,13 +142,16 @@
     private void SaveIssue()
     {
         this.Visibility = false;
-        OnEdited.InvokeAsync(new OnEditedResult { Issue = ClickedIssue, UserId = ButtonText, Type = ButtonText});
+        ClickedIssue.LastUpdated = DateTime.UtcNow.ToString("dd-MM-yyyy HH-mm-ss");
+        OnEdited.InvokeAsync(new OnEditedResult { Issue = ClickedIssue, UserId = ButtonText, Type = ButtonText });
     }
     private bool Visibility { get; set; } = false;
     public async void OnIssueClick(Issue issue)
     {
+        ClickedIssue = new Issue();
         ClickedIssue = issue;
         Visibility = true;
+        StateHasChanged();
     }
     private void OverlayClick(OverlayModalClickEventArgs args)
     {
@@ -95,5 +160,6 @@
     protected override async Task OnInitializedAsync()
     {
         imageSettings.SaveFormat = SaveFormat.Base64;
+        await Core.Initiliaze();
     }
 }

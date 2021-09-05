@@ -14,9 +14,9 @@ namespace ConsoleApp
             var IssueData = new Issue()
             {
                 Title = ") Expected",
-                Created = DateTime.UtcNow.ToString("dd-MM-yyyy HH:mm:ss"),
+                Created = DateTime.UtcNow.ToString("dd-MM-yyyy HH-mm-ss"),
                 Description = "I am getting weird error related to some bracket missing in the Code",
-                LastUpdated = DateTime.UtcNow.ToString("dd-MM-yyyy HH:mm:ss"),
+                LastUpdated = DateTime.UtcNow.ToString("dd-MM-yyyy HH-mm-ss"),
                 Tag = "Beginner",
                 Solution = "Format the Code with ctrl + F and ctrl + d then you can easily find the missing bracket",
                 Solved = true

@@ -1,20 +1,75 @@
 ﻿@using Firebase.Auth;
 @page "/signup"
-<h3>Signup</h3>
-<label>Email:</label>
-<input @bind-value="email" type="text" /><br><br>
-<label>Password:</label>
-<input @bind-value="password" type="password"/><br><br>
-<label>Display Name:</label>
-<input @bind-value="displayName" type="text"/><br><br>
-<button class="ml-md-auto btn btn-primary" @onclick="Registor">Registor</button>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+        <title>Register</title>
+        <!--[if lt IE 9]>
+                    <script src="assets/js/html5shiv.min.js"></script>
+                    <script src="assets/js/respond.min.js"></script>
+                <![endif]-->
+    </head>
+    <body>
+
+        <div class="main-wrapper login-body">
+            <div class="login-wrapper">
+                <div class="container">
+                    <div class="loginbox">
+                        <div class="login-left">
+                            <img class="img-fluid" src="/logo.png" alt="Logo">
+                        </div>
+                        <div class="login-right">
+                            <div class="login-right-wrap">
+                                <h1>Register</h1>
+                                <p class="account-subtitle">Access to our dashboard</p>
+
+                                <div>
+                                    <div class="form-group">
+                                        <input class="form-control" type="text" @bind-value="@displayName" placeholder="Name">
+                                    </div>
+                                    <div class="form-group">
+                                        <input class="form-control" type="text" @bind-value="@email" placeholder="Email">
+                                    </div>
+                                    <div class="form-group">
+                                        <input class="form-control" type="password" @bind-value="@password" placeholder="Password">
+                                    </div>
+                                    <div class="form-group">
+                                        <input class="form-control" type="password" placeholder="Confirm Password">
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <button class="btn btn-primary btn-block" @onclick="Register">Register</button>
+                                    </div>
+                                </div>
+
+                                <div class="login-or">
+                                    <span class="or-line"></span>
+                                </div>
+                             
+
+                                <div class="text-center dont-have">Already have an account? <a href="/logincontrol">Login</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
 @code {
     public string email { get; set; }
     public string password { get; set; }
     public string displayName { get; set; }
-    public async Task Registor()
+    public async Task Register()
     {
-        var auth = new FirebaseAuthProvider(new Firebase.Auth.FirebaseConfig("AIzaSyC17liZERnPsPKzQ_2LF0G6u3KA8RTMZO8"));
-        var result = await auth.CreateUserWithEmailAndPasswordAsync(email, password, displayName, true);
+        try
+        {
+            var auth = new FirebaseAuthProvider(new Firebase.Auth.FirebaseConfig("AIzaSyC17liZERnPsPKzQ_2LF0G6u3KA8RTMZO8"));
+            var result = await auth.CreateUserWithEmailAndPasswordAsync(email, password, displayName, true);
+        }
+        catch
+        { }
     }
 }
