@@ -16,12 +16,17 @@ __Here is our business idea__
 - __Note down Issues__
 - __Revise through all Issues__
 - __Share Issues with all other students__
+- __Get solutions directly from internet__
+- __Compete with each other_
+- __Share your progress_
+- __Make organizing more fun with ui__
 
 ## Technologies used
 - __Blazor Server__
 - __ASP NET framework__
 - __C#__
 - __Firebase Firestore Database__
+- __[Synfusion Blazor](https://www.syncfusion.com/blazor-components)__
 
 ## Installation
 
